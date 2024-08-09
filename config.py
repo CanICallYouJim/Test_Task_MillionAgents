@@ -1,3 +1,8 @@
+import datetime
+import logging
+
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,3 +23,20 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+scheduler_setting = {
+    'jobstores': {
+        'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+    },
+    'job_defaults': {
+        'coalesce': True,
+        'max_instances': 1,
+        'misfire_grace_time': None
+    }}
+
+scheduler = AsyncIOScheduler(job_defaults=scheduler_setting['job_defaults'], jobstores=scheduler_setting['jobstores'],
+                             timezone=datetime.UTC)
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
+                    datefmt='%d/%m/%Y %I:%M:%S', encoding='utf-8')

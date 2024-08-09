@@ -23,7 +23,7 @@ class Base1(DeclarativeBase):
 
 engine = create_async_engine(url=settings.DB_URL, echo=True)
 
-async_session = async_sessionmaker(engine)
+async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:

@@ -1,30 +1,35 @@
 import logging
 import os
+from pathlib import Path
 
-from fastapi import Depends
 from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from databases.database import get_async_session
+from databases.database import async_session
 from databases.models import FileModel
 
 
-async def clean_old_files(session: AsyncSession = Depends(get_async_session)):
+async def clean_old_files():
     """
     Deletes old files
     :param session: DB session
     """
-    subquery = select(FileModel.id).order_by(FileModel.created_at.desc()).limit(10)
+    async with async_session() as session:
+        subquery = select(FileModel.id).order_by(FileModel.created_at.desc()).limit(3)
 
-    filenames = await session.execute(delete(FileModel).where(FileModel.id.not_in(subquery)).returning(FileModel.filename))
-    await session.commit()
+        filenames = await session.scalars(delete(FileModel).where(FileModel.id.not_in(subquery)).returning(FileModel.filename))
+        await session.commit()
 
     counter = 0
+    filenames = filenames.all()
+    script_dir = Path(__file__).parent
+
     for filename in filenames:
         try:
-            os.remove(f"downloaded/{filename}")
+            file_path = script_dir / f"downloaded/{filename}"
+            os.remove(file_path)
             counter += 1
-        except:
+        except Exception as ex:
+            logging.error(ex)
             continue
 
     logging.info(f"{len(filenames)} were deleted from DB, {counter} were deleted locally")
