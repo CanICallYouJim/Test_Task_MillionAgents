@@ -1,6 +1,13 @@
+import datetime
 import uuid
+from typing import Annotated
+
+from sqlalchemy import text
+
 from .database import Base1
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+created_at = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 
 
 class FileModel(Base1):
@@ -11,3 +18,4 @@ class FileModel(Base1):
     size_kb: Mapped[int]
     file_format: Mapped[str]
     filename: Mapped[str]
+    created_at: Mapped[created_at]
