@@ -5,12 +5,14 @@
 - git clone https://github.com/CanICallYouJim/Test_Task_MillionAgents.git
   - в терминале войти в папку
 - pip install -r requirements.txt
-- создать базу в postgresql
-  - в корне создать .env и .env.test с данными формата: DB_HOST = localhost
-  DB_PORT = 5432
-  DB_USER = postgres
-  DB_NAME = million_agents
-  DB_PASS = password
-  MODE = PROD ИЛИ TEST СООТВЕТСТВЕННО
-  
+- создать 2 базы данных в postgresql - продакшн и для тестов
+  - в корне создать файлы .env и .env.test соответственно с переменными:
+  ```makefile
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=postgres
+    DB_NAME=prod_db_name ИЛИ test_db_name
+    DB_PASS=password
+    MODE=PROD ИЛИ TEST
+  ``` 
 - запустить через main.py или команду в терминале fastapi run
