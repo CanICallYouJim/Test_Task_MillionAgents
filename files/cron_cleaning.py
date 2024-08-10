@@ -7,9 +7,11 @@ from sqlalchemy import delete, select
 from databases.database import async_session
 from databases.models import FileModel
 from files.s3 import s3
+from config import scheduler
 
 
-async def clean_old_files():
+@scheduler.scheduled_job('cron', hour=12, id='clean_old_files_id')
+async def clean_old_files() -> None:
     """
     Deletes old files
     :param session: DB session

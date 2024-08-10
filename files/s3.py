@@ -1,7 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 
-from aiobotocore.session import get_session
+from aiobotocore.session import get_session, AioBaseClient
 from botocore.exceptions import ClientError
 
 
@@ -16,11 +16,11 @@ class S3:
         self.session = get_session()
 
     @asynccontextmanager
-    async def get_client(self):
+    async def get_client(self) -> AioBaseClient:
         async with self.session.create_client("s3", **self.config) as client:
             yield client
 
-    async def upload_file(self, file_path: str):
+    async def upload_file(self, file_path: str) -> None:
         object_name = file_path.split("/")[-1]  # /admins/ilya/dog.mov
         try:
             # async with self.get_client() as client:
@@ -35,7 +35,7 @@ class S3:
             logging.error(f"Error uploading file: {e}")
             raise ClientError
 
-    async def delete_file(self, object_name: str):
+    async def delete_file(self, object_name: str) -> None:
         try:
             # async with self.get_client() as client:
             #     await client.delete_object(Bucket=self.bucket_name, Key=object_name)
