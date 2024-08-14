@@ -142,6 +142,7 @@ venv.bak/
 /site
 files/downloaded/*
 jobs.sqlite
+tests/files/downloaded/*
 
 # mypy
 .mypy_cache/

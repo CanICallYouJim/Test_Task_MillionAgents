@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 from fastapi import APIRouter, status, Depends, UploadFile, HTTPException
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/files", tags=["Files"])
 UPLOAD_DIR = Path("files/downloaded/")
 
 
-@router.post("/upload/", response_model=None, status_code=201, description="Uploads file on server")
+@router.post("/upload/", response_model=None, status_code=status.HTTP_201_CREATED, description="Uploads file on server")
 async def saving_file(file: UploadFile) ->\
         HTTPException | dict[str, str]:
     """
@@ -26,7 +27,7 @@ async def saving_file(file: UploadFile) ->\
             while chunk := await file.read(1024):
                 f.write(chunk)
 
-        await s3.upload_file(file_path=f"files/downloaded/{file.filename}")
+        await s3.upload_file(file_path=f"{UPLOAD_DIR}/{file.filename}")
 
     except Exception as ex:
         logging.error(ex)

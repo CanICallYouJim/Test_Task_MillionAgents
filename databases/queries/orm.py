@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from fastapi import HTTPException
@@ -21,5 +22,6 @@ class AsyncORM:
                 instance = FileModel(id=uuid.uuid4(), size_kb=size_kb, file_format=file_format, filename=filename)
                 session.add(instance)
                 await session.commit()
-            except:
+            except Exception as ex:
+                logging.error(ex)
                 raise HTTPException(status_code=500, detail="File metadata saving failed")
